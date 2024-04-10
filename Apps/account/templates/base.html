@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'dashboard' %}">
+            <p class="level-item has-text-centered is-size-3">DataVizLab</p>
+        </a>
+    </div>
+    {% if request.user.is_authenticated %}
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="{% url 'dashboard' %}">
+                Mis Datos
+            </a>
+
+            <a class="navbar-item" href="{% url 'DataVizLab:upload_csv' %}">
+                Subir Datos
+            </a>
+            <a class="navbar-item" href="#">
+                Ayuda
+            </a>
+        </div>
+        {% if request.user.is_authenticated %}
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <p>
+                    Hello {{ request.user.first_name|default:request.user.username }}, &nbsp;
+                </p>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"><a><strong> Log out</strong></a></button>
+                </form>&nbsp;
+                <form action="{% url 'password_change' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"><a><strong> Cambiar Contraseña</strong></a></button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</nav>
+
+<div id="columns">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
