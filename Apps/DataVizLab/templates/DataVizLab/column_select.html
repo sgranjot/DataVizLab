@@ -7,7 +7,7 @@
 <body>
 
 <h1>Select Columns</h1>
-<form method="post" action="create_table.py">
+<form method="post" action="{% url 'DataVizLab:create_table' %}">
     {% csrf_token %}
     <!--<label for="columns">Select Columns:</label>
     <select name="columns" id="columns" multiple>
