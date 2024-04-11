@@ -7,14 +7,24 @@
 <body>
 
 <h1>Select Columns</h1>
-<form method="post">
+<form method="post" action="create_table.py">
     {% csrf_token %}
-    <label for="columns">Select Columns:</label>
+    <!--<label for="columns">Select Columns:</label>
     <select name="columns" id="columns" multiple>
         {% for column in columns %}
         <option value="{{ column }}">{{ column }}</option>
         {% endfor %}
-    </select>
+    </select>-->
+    <fieldset>
+        <legend>Select Columns:</legend>
+        {% for column in columns %}
+            <label>
+                <input type="checkbox" name="selected_columns" value="{{ column }}">
+                {{ column }}
+            </label><br>
+        {% endfor %}
+        <input type="hidden" name="csv_file_id" value="{{ csv_file_id }}">
+    </fieldset>
     <button type="submit">Submit</button>
 </form>
 

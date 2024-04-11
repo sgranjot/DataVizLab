@@ -16,7 +16,8 @@ def upload_csv(request):
             csv_file.save()
             df = pd.read_csv(csv_file.file.path)
             columns = df.columns
-            return render(request, 'DataVizLab/column_select.html', {'columns': columns})
+            id = csv_file.id
+            return render(request, 'DataVizLab/column_select.html', {'columns': columns, 'csv_file_id': id})
     else:
         form = CSVForm()
     return render(request, 'DataVizLab/upload_csv.html', {'form': form})
