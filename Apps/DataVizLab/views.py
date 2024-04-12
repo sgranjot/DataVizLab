@@ -50,9 +50,23 @@ def create_table (request):
     tabla.scale(1.2, 1.2)
     #plt.show()
 
-    # Guardar la tabla en un archivo XLSX
-    nombre_archivo_xlsx = os.path.join('E:\proyectos\DataVizLab\DataVizLab_env\DataVizLab\\xlsx', 'tabla.xlsx')
-    workbook = xlsxwriter.Workbook(nombre_archivo_xlsx)
+    # Obtener el nombre del archivo CSV sin la extensión
+    csv_file_name = os.path.splitext(os.path.basename(file_csv.file.name))[0]
+
+    # Obtener la ruta absoluta del directorio donde se guardará el archivo XLSX
+    current_directory = os.path.abspath(os.path.dirname(__file__))
+    xlsx_directory = os.path.join(current_directory, 'xlsx')
+
+    # Crear el directorio 'xlsx' si no existe
+    if not os.path.exists(xlsx_directory):
+        os.makedirs(xlsx_directory)
+
+    # Definir el nombre del archivo XLSX con el nombre del archivo CSV
+    xlsx_file_name = f"{csv_file_name}.xlsx"
+    xlsx_file_path = os.path.join(xlsx_directory, xlsx_file_name)
+
+    # Crear el archivo XLSX y escribir los datos
+    workbook = xlsxwriter.Workbook(xlsx_file_path)
     worksheet = workbook.add_worksheet()
 
     # Escribir los datos en el archivo XLSX
@@ -63,3 +77,8 @@ def create_table (request):
     workbook.close()
 
     return render(request, 'DataVizLab/view_table.html')
+
+
+
+
+

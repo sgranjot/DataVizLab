@@ -6,7 +6,7 @@ import xlsxwriter
 
 
 def create (request):
-    selected_columns = request.POST.get('selected_columns')
+    selected_columns = request.POST.getlist('selected_columns')
     id = request.POST.get('csv_file_id')
 
     # archivo csv recuperado de la DB
@@ -21,14 +21,15 @@ def create (request):
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.axis('tight')
     ax.axis('off')
-    tabla = table.table(cellText=df_selected_columns.values, colLabels=df_selected_columns.columns, loc='center', cellLoc='center')
+    tabla = table.table(ax, cellText=df_selected_columns.values, colLabels=df_selected_columns.columns, loc='center',
+                        cellLoc='center')
     tabla.auto_set_font_size(False)
     tabla.set_fontsize(10)
     tabla.scale(1.2, 1.2)
-    plt.show()
+    # plt.show()
 
     # Guardar la tabla en un archivo XLSX
-    nombre_archivo_xlsx = 'DataVizLab/xlsx/tabla.xlsx'
+    nombre_archivo_xlsx = os.path.join('E:\proyectos\DataVizLab\DataVizLab_env\DataVizLab\\xlsx', 'tabla.xlsx')
     workbook = xlsxwriter.Workbook(nombre_archivo_xlsx)
     worksheet = workbook.add_worksheet()
 
