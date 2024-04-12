@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='csvfile',
             name='file',
-            field=models.FileField(upload_to='uploads/', validators=[Apps.DataVizLab.models.validate_csv_file_extension]),
+            field=models.FileField(upload_to='uploads/', validators=[Apps.DataVizLab.models.validate_excel_file_extension]),
         ),
     ]

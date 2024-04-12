@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from .models import CSVFile
-from .forms import CSVForm
+from .models import ExcelFile
+from .forms import ExcelForm
 import os
 
 import pandas as pd
@@ -12,30 +12,30 @@ import xlsxwriter
 
 
 @login_required
-def upload_csv(request):
+def upload_excel(request):
     if request.method == 'POST':
-        form = CSVForm(request.POST, request.FILES)
+        form = ExcelForm(request.POST, request.FILES)
         if form.is_valid():
-            csv_file = form.save(commit=False)
-            csv_file.user = request.user            # Asignar el usuario actual al campo user
-            csv_file.save()
-            df = pd.read_csv(csv_file.file.path)
+            excel_file = form.save(commit=False)
+            excel_file.user = request.user            # Asignar el usuario actual al campo user
+            excel_file.save()
+            df = pd.read_excel(excel_file.file.path)
             columns = df.columns
-            id = csv_file.id
-            return render(request, 'DataVizLab/column_select.html', {'columns': columns, 'csv_file_id': id})
+            id = excel_file.id
+            return render(request, 'DataVizLab/column_select.html', {'columns': columns, 'excel_file_id': id})
     else:
-        form = CSVForm()
-    return render(request, 'DataVizLab/upload_csv.html', {'form': form})
+        form = ExcelForm()
+    return render(request, 'DataVizLab/upload_excel.html', {'form': form})
 
 
 def create_table (request):
     selected_columns = request.POST.getlist('selected_columns')
-    id = request.POST.get('csv_file_id')
+    id = request.POST.get('excel_file_id')
 
-    # archivo csv recuperado de la DB
-    file_csv = CSVFile.objects.get(id=id)
+    # archivo excel recuperado de la DB
+    file_excel = ExcelFile.objects.get(id=id)
 
-    df = pd.read_csv(file_csv.file.path)
+    df = pd.read_csv(file_excel.file.path)
 
     # filtramos por las columnas seleccionadas
     df_selected_columns = df[selected_columns]
@@ -50,8 +50,8 @@ def create_table (request):
     tabla.scale(1.2, 1.2)
     #plt.show()
 
-    # Obtener el nombre del archivo CSV sin la extensión
-    csv_file_name = os.path.splitext(os.path.basename(file_csv.file.name))[0]
+    # Obtener el nombre del archivo EXCEL sin la extensión
+    excel_file_name = os.path.splitext(os.path.basename(file_excel.file.name))[0]
 
     # Obtener la ruta absoluta del directorio donde se guardará el archivo XLSX
     current_directory = os.path.abspath(os.path.dirname(__file__))
@@ -61,8 +61,8 @@ def create_table (request):
     if not os.path.exists(xlsx_directory):
         os.makedirs(xlsx_directory)
 
-    # Definir el nombre del archivo XLSX con el nombre del archivo CSV
-    xlsx_file_name = f"{csv_file_name}.xlsx"
+    # Definir el nombre del archivo XLSX de salida con el nombre del archivo XLSX de entrada
+    xlsx_file_name = f"{excel_file_name}.xlsx"
     xlsx_file_path = os.path.join(xlsx_directory, xlsx_file_name)
 
     # Crear el archivo XLSX y escribir los datos

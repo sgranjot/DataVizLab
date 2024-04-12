@@ -9,12 +9,6 @@
 <h1>Select Columns</h1>
 <form method="post" action="{% url 'DataVizLab:create_table' %}">
     {% csrf_token %}
-    <!--<label for="columns">Select Columns:</label>
-    <select name="columns" id="columns" multiple>
-        {% for column in columns %}
-        <option value="{{ column }}">{{ column }}</option>
-        {% endfor %}
-    </select>-->
     <fieldset>
         <legend>Select Columns:</legend>
         {% for column in columns %}
@@ -23,7 +17,7 @@
                 {{ column }}
             </label><br>
         {% endfor %}
-        <input type="hidden" name="csv_file_id" value="{{ csv_file_id }}">
+        <input type="hidden" name="csv_file_id" value="{{ excel_file_id }}">
     </fieldset>
     <button type="submit">Submit</button>
 </form>

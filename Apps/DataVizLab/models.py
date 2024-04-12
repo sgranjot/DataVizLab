@@ -4,14 +4,14 @@ from django.core.exceptions import ValidationError
 import os
 
 
-def validate_csv_file_extension(value):
+def validate_excel_file_extension(value):
     ext = os.path.splitext(value.name)[1]  # Obtiene la extensión del archivo
-    if ext.lower() != '.csv':
-        raise ValidationError('El archivo debe ser un archivo CSV.')
+    if ext.lower() != '.xlsx':
+        raise ValidationError('El archivo debe ser un archivo XLSX.')
 
 
-class CSVFile(models.Model):
+class ExcelFile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/', validators=[validate_csv_file_extension])
+    file = models.FileField(upload_to='uploads/', validators=[validate_excel_file_extension])
 
 
