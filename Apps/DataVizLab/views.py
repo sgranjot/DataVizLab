@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import ExcelFile
 from .forms import ExcelForm
+from io import BytesIO
 import os
 
 import pandas as pd
@@ -19,9 +20,16 @@ def upload_excel(request):
             excel_file = form.save(commit=False)
             excel_file.user = request.user            # Asignar el usuario actual al campo user
             excel_file.save()
-            df = pd.read_excel(excel_file.file.path)
+
+            decrypted_data = excel_file.get_decrypted_file()
+            # Creamos un objeto BytesIO para leer los datos
+            buffer = BytesIO(decrypted_data)
+            # Leemos el archivo Excel utilizando pd.read_excel
+            df = pd.read_excel(buffer)
+
             columns = df.columns
             id = excel_file.id
+
             return render(request, 'DataVizLab/column_select.html', {'columns': columns, 'excel_file_id': id})
     else:
         form = ExcelForm()
@@ -31,11 +39,15 @@ def upload_excel(request):
 def create_table (request):
     selected_columns = request.POST.getlist('selected_columns')
     id = request.POST.get('excel_file_id')
-
+    print('el id es el siguieteXXXXXX: ', id)
     # archivo excel recuperado de la DB
     file_excel = ExcelFile.objects.get(id=id)
 
-    df = pd.read_csv(file_excel.file.path)
+    decrypted_data = file_excel.get_decrypted_file()
+    # Creamos un objeto BytesIO para leer los datos
+    buffer = BytesIO(decrypted_data)
+    # Leemos el archivo Excel utilizando pd.read_excel
+    df = pd.read_excel(buffer)
 
     # filtramos por las columnas seleccionadas
     df_selected_columns = df[selected_columns]
