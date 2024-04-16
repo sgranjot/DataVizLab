@@ -12,7 +12,11 @@ def create (request):
     # archivo excel recuperado de la DB
     file_excel = ExcelFile.objects.get(id=id)
 
-    df = pd.read_csv(file_excel.file.path)
+    decrypted_data = file_excel.get_decrypted_file()
+    # Creamos un objeto BytesIO para leer los datos
+    buffer = BytesIO(decrypted_data)
+    # Leemos el archivo Excel utilizando pd.read_excel
+    df = pd.read_excel(buffer)
 
     # filtramos por las columnas seleccionadas
     df_selected_columns = df[selected_columns]

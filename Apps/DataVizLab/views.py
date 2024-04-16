@@ -39,7 +39,7 @@ def upload_excel(request):
 def create_table (request):
     selected_columns = request.POST.getlist('selected_columns')
     id = request.POST.get('excel_file_id')
-    print('el id es el siguieteXXXXXX: ', id)
+
     # archivo excel recuperado de la DB
     file_excel = ExcelFile.objects.get(id=id)
 
