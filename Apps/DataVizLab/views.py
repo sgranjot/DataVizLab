@@ -6,18 +6,15 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from .models import ExcelFile
 from .forms import ExcelForm
-from io import BytesIO
+import io
 import os
 import tempfile
-import logging
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.table as table
 import xlsxwriter
 
-# Configurar el registro de Django
-logger = logging.getLogger(__name__)
 
 class CreateExcelFileView(generic.CreateView):
     model = ExcelFile
@@ -29,46 +26,34 @@ class CreateExcelFileView(generic.CreateView):
         form.instance.user = self.request.user  # Asignar el usuario actual al objeto ExcelFile
         response = super().form_valid(form)
 
-        try:
-            # Verificar si el formulario es válido y si el archivo está presente
-            if form.is_valid() and 'file' in form.cleaned_data:
-                # Obtener el archivo xlsx cargado
-                excel_file = form.cleaned_data['file']
+        # Verificar si el formulario es válido y si el archivo está presente
+        if form.is_valid():
+            # Leer el archivo xlsx cargado
+            excel_file = form.save(commit=False)
+            excel_file.user = self.request.user               # Asignar el usuario actual al campo user
+            excel_file.save()
+        return response
 
-                # Verificar si el archivo es una instancia de TemporaryUploadedFile
-                if isinstance(excel_file, TemporaryUploadedFile):
-                    # Obtener la ruta del archivo temporal
-                    temp_file_path = excel_file.temporary_file_path()
+        '''
+        for sheet_name in xls.sheet_names:
+            df = pd.read_excel(xls, sheet_name)
+            sheet_file_name = f"{original_file_name}_{sheet_name}.xlsx"
+            file = df.to_excel(sheet_file_name, index=False)
+            new_excel_file = ExcelFile(user=self.request.user, file=file)
+            new_excel_file.save()'''
 
-                    # Leer el contenido del archivo Excel
-                    xls = pd.ExcelFile(temp_file_path)
+class ListExcelFileView(generic.ListView):
+    template_name = 'DataVizLab/list_ExcelFiles.html'
+    context_object_name = 'excelFile_list'
 
-                    # Iterar sobre cada hoja del archivo xlsx
-                    for sheet_name in xls.sheet_names:
-                        # Leer la hoja actual
-                        df = pd.read_excel(temp_file_path, sheet_name)
+    def get_queryset(self):
+        return ExcelFile.objects.all()
 
-                        # Construir el nombre del archivo para esta hoja
-                        original_file_name, original_file_extension = os.path.splitext(excel_file.name)
-                        sheet_file_name = f"{original_file_name}_{sheet_name}.xlsx"
 
-                        # Guardar la hoja como un archivo xlsx independiente en la base de datos
-                        new_excel_file = ExcelFile(user=self.request.user)
-
-                        # Crear un archivo temporal para guardar el DataFrame
-                        temp_buffer = BytesIO()
-                        df.to_excel(temp_buffer, index=False)
-                        temp_buffer.seek(0)
-
-                        # Guardar el archivo
-                        new_excel_file.file.save(sheet_file_name, ContentFile(temp_buffer.read()), save=True)
-
-                    return response
-        except Exception as e:
-            print(e)  # Imprimir la excepción para depuración
-            return HttpResponse("Error procesando el archivo")
-
-        return HttpResponse("El archivo no es válido o no se proporcionó un archivo")
+class DeleteExcelFileView(generic.DeleteView):
+    model = ExcelFile
+    template_name = 'DataVizLab/deleteExcelFile.html'
+    success_url = reverse_lazy('DataVizLab:list_ExcelFiles')
 
 '''
 @login_required
@@ -94,6 +79,8 @@ def upload_excel(request):
         form = ExcelForm()
     return render(request, 'DataVizLab/upload_excel.html', {'form': form})
 '''
+
+
 
 def create_table (request):
     selected_columns = request.POST.getlist('selected_columns')
