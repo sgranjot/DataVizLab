@@ -47,7 +47,7 @@ class ListExcelFileView(generic.ListView):
     context_object_name = 'excelFile_list'
 
     def get_queryset(self):
-        return ExcelFile.objects.all()
+        return ExcelFile.objects.filter(user=self.request.user)
 
 
 class DeleteExcelFileView(generic.DeleteView):
