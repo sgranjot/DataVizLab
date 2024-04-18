@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload CSV</title>
+    <title>Upload EXCEL</title>
 </head>
 <body>
 
-<h1>Upload CSV File</h1>
+<h1>Upload EXCEL File</h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
@@ -16,4 +16,4 @@
 <a href="{% url 'dashboard' %}">Inicio</a>
 
 </body>
-</html>
+</html>>

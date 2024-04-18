@@ -1,8 +1,8 @@
 from django import forms
-from .models import CSVFile
+from .models import ExcelFile
 
 
-class CSVForm(forms.ModelForm):
+class ExcelForm(forms.ModelForm):
     class Meta:
-        model = CSVFile
+        model = ExcelFile
         fields = ['file']
