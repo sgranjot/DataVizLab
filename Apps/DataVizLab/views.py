@@ -1,8 +1,14 @@
 from django.contrib.auth.decorators import login_required
+from django.core.files.uploadedfile import TemporaryUploadedFile
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
+from django.views import generic
 from .models import ExcelFile
 from .forms import ExcelForm
+import io
 import os
+import tempfile
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,7 +16,52 @@ import matplotlib.table as table
 import xlsxwriter
 
 
+class CreateExcelFileView(generic.CreateView):
+    model = ExcelFile
+    fields = ['file']
+    template_name = 'DataVizLab/upload_excel.html'
+    success_url = reverse_lazy('dashboard')
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user  # Asignar el usuario actual al objeto ExcelFile
+        response = super().form_valid(form)
+
+        # Verificar si el formulario es válido y si el archivo está presente
+        if form.is_valid():
+            # Leer el archivo xlsx cargado
+            excel_file = form.save(commit=False)
+            excel_file.user = self.request.user               # Asignar el usuario actual al campo user
+            excel_file.save()
+        return response
+
+        '''
+        for sheet_name in xls.sheet_names:
+            df = pd.read_excel(xls, sheet_name)
+            sheet_file_name = f"{original_file_name}_{sheet_name}.xlsx"
+            file = df.to_excel(sheet_file_name, index=False)
+            new_excel_file = ExcelFile(user=self.request.user, file=file)
+            new_excel_file.save()'''
+
+class ListExcelFileView(generic.ListView):
+    template_name = 'DataVizLab/list_ExcelFiles.html'
+    context_object_name = 'excelFile_list'
+
+    def get_queryset(self):
+        return ExcelFile.objects.filter(user=self.request.user)
+
+
+class DeleteExcelFileView(generic.DeleteView):
+    model = ExcelFile
+    template_name = 'DataVizLab/deleteExcelFile.html'
+    success_url = reverse_lazy('DataVizLab:list_ExcelFiles')
+
+
+class DetailExcelFileView(generic.DetailView):
+    model = ExcelFile
+    template_name = 'DataVizLab/excelFileDetail.html'
+    context_object_name = 'object'
+
+'''
 @login_required
 def upload_excel(request):
     if request.method == 'POST':
@@ -19,13 +70,22 @@ def upload_excel(request):
             excel_file = form.save(commit=False)
             excel_file.user = request.user            # Asignar el usuario actual al campo user
             excel_file.save()
-            df = pd.read_excel(excel_file.file.path)
+
+            decrypted_data = excel_file.get_decrypted_file()
+            # Creamos un objeto BytesIO para leer los datos
+            buffer = BytesIO(decrypted_data)
+            # Leemos el archivo Excel utilizando pd.read_excel
+            df = pd.read_excel(buffer)
+
             columns = df.columns
             id = excel_file.id
+
             return render(request, 'DataVizLab/column_select.html', {'columns': columns, 'excel_file_id': id})
     else:
         form = ExcelForm()
     return render(request, 'DataVizLab/upload_excel.html', {'form': form})
+'''
+
 
 
 def create_table (request):
@@ -35,7 +95,11 @@ def create_table (request):
     # archivo excel recuperado de la DB
     file_excel = ExcelFile.objects.get(id=id)
 
-    df = pd.read_csv(file_excel.file.path)
+    decrypted_data = file_excel.get_decrypted_file()
+    # Creamos un objeto BytesIO para leer los datos
+    buffer = BytesIO(decrypted_data)
+    # Leemos el archivo Excel utilizando pd.read_excel
+    df = pd.read_excel(buffer)
 
     # filtramos por las columnas seleccionadas
     df_selected_columns = df[selected_columns]
