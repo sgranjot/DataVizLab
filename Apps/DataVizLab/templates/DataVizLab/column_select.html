@@ -7,14 +7,18 @@
 <body>
 
 <h1>Select Columns</h1>
-<form method="post">
+<form method="post" action="{% url 'DataVizLab:create_table' %}">
     {% csrf_token %}
-    <label for="columns">Select Columns:</label>
-    <select name="columns" id="columns" multiple>
+    <fieldset>
+        <legend>Select Columns:</legend>
         {% for column in columns %}
-        <option value="{{ column }}">{{ column }}</option>
+            <label>
+                <input type="checkbox" name="selected_columns" value="{{ column }}">
+                {{ column }}
+            </label><br>
         {% endfor %}
-    </select>
+        <input type="hidden" name="excel_file_id" value="{{ excel_file_id }}">
+    </fieldset>
     <button type="submit">Submit</button>
 </form>
 

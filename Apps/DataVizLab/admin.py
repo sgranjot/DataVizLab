@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import CSVFile
+from .models import ExcelFile
 
 
-admin.site.register(CSVFile)
+admin.site.register(ExcelFile)
