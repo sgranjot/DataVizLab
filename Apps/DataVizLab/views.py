@@ -55,6 +55,12 @@ class DeleteExcelFileView(generic.DeleteView):
     template_name = 'DataVizLab/deleteExcelFile.html'
     success_url = reverse_lazy('DataVizLab:list_ExcelFiles')
 
+
+class DetailExcelFileView(generic.DetailView):
+    model = ExcelFile
+    template_name = 'DataVizLab/excelFileDetail.html'
+    context_object_name = 'object'
+
 '''
 @login_required
 def upload_excel(request):
