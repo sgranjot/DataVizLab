@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %} Segmentaciones de {{ object.original_filename }} {% endblock %}
+{% block content %}
+<h1>{{ object.original_filename }}</h1>
+<br>
+<form method="post" action="#">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Elige las segmentaciones que quieres crear:</legend>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Género">
+            Género
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Comité de Dirección">
+            Comité de Dirección
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="RLT">
+            RLT
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Rangos de Edad">
+            Rangos de Edad
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Promedio de Edad">
+            Promedio de Edad
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Rangos de Antigüedad">
+            Rangos de Antigüedad
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Promedio de Antigüedad">
+            Promedio de Antigüedad
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Nivel de Estudios">
+            Nivel de Estudios
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Centro de Trabajo">
+            Centro de Trabajo
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Departamento/area">
+            Departamento/area
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Nivel Organizativo Interno">
+            Nivel Organizativo Interno
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Categorías de Convenio">
+            Categorías de Convenio
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Puestos de Trabajo">
+            Puestos de Trabajo
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="PIV/IPE">
+            PIV/IPE
+        </label><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="Equiv IPE-Puestos">
+            Equiv IPE-Puestos
+        </label><br><br>
+        <label>
+            <input type="checkbox" name="selected_segmentation" value="todas">
+            Todas
+        </label><br>
+        <input type="hidden" name="excel_file_id" value="{{ pk }}">
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}

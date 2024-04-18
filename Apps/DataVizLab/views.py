@@ -1,19 +1,15 @@
-from django.contrib.auth.decorators import login_required
-from django.core.files.uploadedfile import TemporaryUploadedFile
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.views import generic
-from .models import ExcelFile
-from .forms import ExcelForm
-import io
 import os
-import tempfile
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.table as table
+import pandas as pd
 import xlsxwriter
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views import generic
+
+from .models import ExcelFile
 
 
 class CreateExcelFileView(generic.CreateView):
@@ -60,6 +56,11 @@ class DetailExcelFileView(generic.DetailView):
     model = ExcelFile
     template_name = 'DataVizLab/excelFileDetail.html'
     context_object_name = 'object'
+
+
+def estructura_de_plantilla_segmentaciones(request, pk):
+    return render(request, 'DataVizLab/estructura_de_plantilla_segmentaciones.html', {'pk':pk})
+
 
 '''
 @login_required
