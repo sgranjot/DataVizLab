@@ -12,4 +12,5 @@ urlpatterns = [
     path('list_ExcelFiles/', login_required(views.ListExcelFileView.as_view()), name='list_ExcelFiles'),
     path('delete_ExcelFile/<int:pk>/', login_required(views.DeleteExcelFileView.as_view()), name='delete_ExcelFile'),
     path('detail_ExcelFile/<int:pk>/', login_required(views.DetailExcelFileView.as_view()), name='detail_ExcelFile'),
+    path('estructura_de_plantilla_segmentaciones/<int:pk>/', login_required(views.estructura_de_plantilla_segmentaciones), name='estructura_de_plantilla_segmentaciones'),
 ]
