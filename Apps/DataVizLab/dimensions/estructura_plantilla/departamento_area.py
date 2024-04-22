@@ -1,5 +1,5 @@
 import pandas as pd
-
+import os
 
 #def by_departamento_area(request):
 #TABLA COMPLETA
@@ -10,8 +10,12 @@ import pandas as pd
 # Creamos un objeto BytesIO para leer los datos
 #buffer = BytesIO(decrypted_data)
 # Leemos el archivo Excel utilizando pd.read_excel
-df = pd.read_excel('E:\\proyectos\\DataVizLab\\DataVizLab_env\\DataVizLab\\Apps\\DataVizLab\\xlsx\\datos anonimos.xlsx')
-print(df.columns)
+
+
+#
+#print("Directorio de trabajo actual:", current_directory)
+df = pd.read_excel('../../xlsx/datos.xlsx')
+#print(df.columns)
 
 # Calculamos el número de hombres y mujeres por departamento/área
 gender_counts = df.groupby('Depto/ Área')['Género'].value_counts().unstack(fill_value=0)
@@ -20,22 +24,22 @@ gender_counts = df.groupby('Depto/ Área')['Género'].value_counts().unstack(fil
 total_people = gender_counts.sum(axis=1)
 
 # Calculamos el porcentaje horizontal de hombres y mujeres
-horizontal_male_percentage = ((gender_counts['Male'] / total_people) * 100).__round__(2)
-horizontal_female_percentage = ((gender_counts['Female'] / total_people) * 100).__round__(2)
+horizontal_male_percentage = ((gender_counts['Hombre'] / total_people) * 100).__round__(2)
+horizontal_female_percentage = ((gender_counts['Mujer'] / total_people) * 100).__round__(2)
 
 # Calculamos el porcentaje vertical de hombres y mujeres
-total_male = gender_counts['Male'].sum()
-total_female = gender_counts['Female'].sum()
-vertical_male_percentage = ((gender_counts['Male'] / total_male) * 100).__round__(2)
-vertical_female_percentage = ((gender_counts['Female'] / total_female) * 100).__round__(2)
+total_male = gender_counts['Hombre'].sum()
+total_female = gender_counts['Mujer'].sum()
+vertical_male_percentage = ((gender_counts['Hombre'] / total_male) * 100).__round__(2)
+vertical_female_percentage = ((gender_counts['Mujer'] / total_female) * 100).__round__(2)
 
 # Creamos el nuevo DataFrame
 new_df = pd.DataFrame({
     'Depto/ Área': gender_counts.index,
-    'Número de hombres': gender_counts['Male'],
+    'Número de hombres': gender_counts['Hombre'],
     '% Vertical de hombres': vertical_male_percentage,
     '% Horizontal de hombres': horizontal_male_percentage,
-    'Número de mujeres': gender_counts['Female'],
+    'Número de mujeres': gender_counts['Mujer'],
     '% Vertical de mujeres': vertical_female_percentage,
     '% Horizontal de mujeres': horizontal_female_percentage,
     'Total de personas': total_people,
