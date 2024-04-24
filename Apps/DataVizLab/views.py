@@ -11,6 +11,8 @@ from django.views import generic
 
 from .models import ExcelFile
 
+from .dimensions.estructura_plantilla import departamento_area
+
 
 class CreateExcelFileView(generic.CreateView):
     model = ExcelFile
@@ -61,6 +63,18 @@ class DetailExcelFileView(generic.DetailView):
 def estructura_de_plantilla_segmentaciones(request, pk):
     return render(request, 'DataVizLab/estructura_de_plantilla_segmentaciones.html', {'pk':pk})
 
+
+def manage_selected_segmentations(request):
+    if request.method == 'POST':
+        options = request.POST.getlist('selected_segmentation')  # opciones seleccionadas
+        pk = request.POST.get('excel_file_id')
+
+        for option in options:
+            if option == 'Departamento/area':
+                departamento_area.by_departamento_area(pk)
+            elif option == 'option2':
+                function_for_option2()
+            # Agrega más condiciones según tus opciones y funciones
 
 '''
 @login_required
