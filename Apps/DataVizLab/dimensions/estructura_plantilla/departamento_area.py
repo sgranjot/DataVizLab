@@ -1,5 +1,9 @@
 import pandas as pd
 import os
+from io import BytesIO
+
+from django.shortcuts import render
+from ...models import ExcelFile
 
 def by_departamento_area(request, pk):
     #TABLA COMPLETA
@@ -10,9 +14,9 @@ def by_departamento_area(request, pk):
     # Creamos un objeto BytesIO para leer los datos
     buffer = BytesIO(decrypted_data)
     # Leemos el archivo Excel utilizando pd.read_excel
-    #current_directory = os.getcwd()
-    #print("Directorio de trabajo actual:", current_directory)
-    df = pd.read_excel('../../xlsx/datos.xlsx')
+    current_directory = os.getcwd()
+    print("Directorio de trabajo actual:", current_directory)
+    df = pd.read_excel('Apps/DataVizLab/xlsx/datos.xlsx')
     print(df.columns)
 
     # Calculamos el número de hombres y mujeres por departamento/área
@@ -78,6 +82,5 @@ def by_departamento_area(request, pk):
 
     #reenderizamos la tabla en el html
     html_table = new_df.to_html(classes='data', index=False)
-    return render(request, 'tabla.html', {'html_table': html_table})
-
+    return html_table
     # #GRAFICA

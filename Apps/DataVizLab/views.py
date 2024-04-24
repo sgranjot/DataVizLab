@@ -8,6 +8,7 @@ import xlsxwriter
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
+from django.http import HttpResponse
 
 from .models import ExcelFile
 
@@ -61,7 +62,8 @@ class DetailExcelFileView(generic.DetailView):
 
 
 def estructura_de_plantilla_segmentaciones(request, pk):
-    return render(request, 'DataVizLab/estructura_de_plantilla_segmentaciones.html', {'pk':pk})
+    excel_file = ExcelFile.objects.get(id=pk)
+    return render(request, 'DataVizLab/estructura_de_plantilla_segmentaciones.html', {'object':excel_file})
 
 
 def manage_selected_segmentations(request):
@@ -71,10 +73,16 @@ def manage_selected_segmentations(request):
 
         for option in options:
             if option == 'Departamento/area':
-                departamento_area.by_departamento_area(pk)
+                html_table = departamento_area.by_departamento_area(request=request, pk=pk)
             elif option == 'option2':
                 function_for_option2()
             # Agrega más condiciones según tus opciones y funciones
+
+        return render(request, 'DataVizLab/tabla.html', {'html_table': html_table})
+    else:
+        return HttpResponse("Error: Método no permitido")
+
+
 
 '''
 @login_required
