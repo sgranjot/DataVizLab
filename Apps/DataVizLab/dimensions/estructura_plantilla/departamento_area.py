@@ -1,5 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 import os
+import base64
 from io import BytesIO
 
 from django.shortcuts import render
@@ -14,10 +16,10 @@ def by_departamento_area(request, pk):
     # Creamos un objeto BytesIO para leer los datos
     buffer = BytesIO(decrypted_data)
     # Leemos el archivo Excel utilizando pd.read_excel
-    current_directory = os.getcwd()
-    print("Directorio de trabajo actual:", current_directory)
+    #current_directory = os.getcwd()
+    #print("Directorio de trabajo actual:", current_directory)
     df = pd.read_excel('Apps/DataVizLab/xlsx/datos.xlsx')
-    print(df.columns)
+    #print(df.columns)
 
     # Calculamos el número de hombres y mujeres por departamento/área
     gender_counts = df.groupby('Depto/ Área')['Género'].value_counts().unstack(fill_value=0)
@@ -78,9 +80,67 @@ def by_departamento_area(request, pk):
 
     new_df = new_df
 
-    print(new_df)
+    #print(new_df)
 
     #reenderizamos la tabla en el html
     html_table = new_df.to_html(classes='data', index=False)
-    return html_table
-    # #GRAFICA
+    #return html_table
+
+
+    # GRAFICA
+    df_grafica = pd.DataFrame({
+        'Depto/ Área': gender_counts.index,
+        '% Horizontal de hombres': horizontal_male_percentage,
+        '% Horizontal de mujeres': horizontal_female_percentage
+    })
+
+    df_grafica.reset_index(drop=True)
+
+    # Crea la gráfica de barras horizontales
+    num_departamentos = len(df_grafica)
+    #fig_width = num_departamentos * 0.5
+    plt.figure(figsize=(12, num_departamentos * 0.35))
+    # Crea las barras de hombres
+    bars1 = plt.barh(df_grafica['Depto/ Área'], df_grafica['% Horizontal de hombres'], color='blue', label='Hombres', zorder=2)
+    # Crea las barras de mujeres
+    bars2 = plt.barh(df_grafica['Depto/ Área'], df_grafica['% Horizontal de mujeres'],
+                     left=df_grafica['% Horizontal de hombres'],
+                     color='purple', label='Mujeres', zorder=2)
+
+    # Imprime los porcentajes dentro de las barras de hombres
+    for bar in bars1:
+        width = bar.get_width()
+        plt.text(width, bar.get_y() + bar.get_height() / 2, f'{width}%', ha='left', va='center', color='white', zorder=3)
+
+    # Imprime los porcentajes dentro de las barras de mujeres
+    for bar in bars2:
+        width = bar.get_width()
+        plt.text(width, bar.get_y() + bar.get_height() / 2, f'{width}%', ha='right', va='center', color='white', zorder=3)
+    plt.xlabel('Porcentaje')
+    plt.ylabel('Departamento')
+    plt.title('Porcentaje de Hombres y Mujeres por Departamento')
+    plt.legend()
+    plt.grid(True)
+    #plt.show()
+
+    # Ajusta el espacio entre el borde superior del lienzo y el comienzo de las barras
+    plt.ylim(-3, num_departamentos + 0.5)
+    # Ajusta el espacio entre el borde inferior del lienzo y el final de las barras
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+
+    # Personaliza los límites y los intervalos del eje x
+    plt.xticks(range(0, 101, 10))
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    graphic = base64.b64encode(image_png)
+    graphic = graphic.decode('utf-8')
+
+    datas = {'html_table': html_table, 'graphic': graphic}
+
+    return datas

@@ -70,15 +70,24 @@ def manage_selected_segmentations(request):
     if request.method == 'POST':
         options = request.POST.getlist('selected_segmentation')  # opciones seleccionadas
         pk = request.POST.get('excel_file_id')
+        titles = []
+        html_tables = []
+        graphics = []
 
         for option in options:
             if option == 'Departamento/area':
-                html_table = departamento_area.by_departamento_area(request=request, pk=pk)
+                titles.append('Segmentación por departamento/area')
+                datas = departamento_area.by_departamento_area(request=request, pk=pk)
+                html_tables.append(datas['html_table'])
+                graphics.append(datas['graphic'])
             elif option == 'option2':
                 function_for_option2()
             # Agrega más condiciones según tus opciones y funciones
 
-        return render(request, 'DataVizLab/tabla.html', {'html_table': html_table})
+        # Combina los títulos y las tablas en una lista de tuplas
+        data = list(zip(titles, html_tables, graphics))
+
+        return render(request, 'DataVizLab/tabla.html', {'data': data})
     else:
         return HttpResponse("Error: Método no permitido")
 

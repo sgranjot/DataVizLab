@@ -1,7 +1,17 @@
 {% extends "base.html" %}
 {% block title %}tabla{% endblock %}
 {% block content %}
-<h1>Tabla de datos</h1>
-{{ html_table | safe }}
+
+
+{% for item in data %}
+<br>
+<h2>{{ item.0 }}</h2>
+<br>
+{{ item.1|safe }}
+<br><br>
+<img src="data:image/png;base64,{{ item.2|safe }}" alt="grafica">
+<br><br>
+{% endfor %}
+
 <a href="#">Exportar a Excel</a>
 {% endblock %}
