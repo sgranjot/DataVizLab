@@ -14,4 +14,5 @@ urlpatterns = [
     path('detail_ExcelFile/<int:pk>/', login_required(views.DetailExcelFileView.as_view()), name='detail_ExcelFile'),
     path('estructura_de_plantilla_segmentaciones/<int:pk>/', login_required(views.estructura_de_plantilla_segmentaciones), name='estructura_de_plantilla_segmentaciones'),
     path('manage_selected_segmentations/', login_required(views.manage_selected_segmentations), name='manage_selected_segmentations'),
+    path('export_to_xlsx/', login_required(views.export_to_xlsx), name='export_to_xlsx'),
 ]

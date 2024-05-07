@@ -12,6 +12,12 @@
 <img src="data:image/png;base64,{{ item.2|safe }}" alt="grafica">
 <br><br>
 {% endfor %}
+<br><br>
 
-<a href="#">Exportar a Excel</a>
+<form method="post" action="{% url 'DataVizLab:export_to_xlsx' %}">
+    {% csrf_token %}
+    <input type="hidden" name="dataFrames" value=" {{ data }} ">
+    <input type="submit" value="Exportar a Excel">
+</form>
+
 {% endblock %}
