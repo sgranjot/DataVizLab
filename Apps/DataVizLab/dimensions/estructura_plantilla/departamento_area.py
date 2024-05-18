@@ -14,7 +14,7 @@ def by_departamento_area(request, pk):
     # Creamos un objeto BytesIO para leer los datos
     buffer = BytesIO(decrypted_data)
     # Leemos el archivo Excel utilizando pd.read_excel
-    df = pd.read_excel(buffer)
+    df = pd.read_excel(buffer, engine='openpyxl')
 
     # TABLA COMPLETA
     # número de hombres y mujeres por departamento/área

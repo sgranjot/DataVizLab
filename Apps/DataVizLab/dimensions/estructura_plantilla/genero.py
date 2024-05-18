@@ -11,7 +11,7 @@ def by_genero(request, pk):
     file_excel = ExcelFile.objects.get(id=pk)
     decrypted_data = file_excel.get_decrypted_file()
     buffer = BytesIO(decrypted_data)
-    df = pd.read_excel(buffer)
+    df = pd.read_excel(buffer, engine='openpyxl')
 
     # TABLA SIMPLE
     #gender_counts = df.groupby('Género').value_counts().unstack(fill_value=0)
@@ -25,9 +25,9 @@ def by_genero(request, pk):
         'Total general': [ total_general]
     })
 
-    new_df=new_df.T
+    new_df = new_df.T
 
-    html_table = new_df.to_html(classes='data', header=False, index=True)
+    html_table = new_df.to_html(classes='data', header=False)
 
     # GRAFICA TARTA
     labels = ['Hombres', 'Mujeres']

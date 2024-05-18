@@ -1,19 +1,16 @@
-from django.shortcuts import render
-import os
+import json
 
-import matplotlib.pyplot as plt
-import matplotlib.table as table
 import pandas as pd
-import xlsxwriter
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
-from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import ExcelFile
-
+from .dimensions import export
 from .dimensions.estructura_plantilla import departamento_area
 from .dimensions.estructura_plantilla import genero
+from .models import ExcelFile
 
 
 class CreateExcelFileView(generic.CreateView):
@@ -71,7 +68,7 @@ def manage_selected_segmentations(request):
 
         for option in options:
             if option == 'Departamento/area':
-                titles.append('Segmentación por departamento/area')
+                titles.append('Segmentación por departamento-area')
                 datas = departamento_area.by_departamento_area(request=request, pk=pk)
                 html_tables.append(datas['html_table'])
                 graphics.append(datas['graphic'])
@@ -82,18 +79,32 @@ def manage_selected_segmentations(request):
                 html_tables.append(datas['html_table'])
                 graphics.append(datas['graphic'])
                 dataFrames.append(datas['df'])
-                print('este es le dataframe en la vista',datas['df'])
-            # Agrega más condiciones según tus opciones y funciones
+            # TODO Agregar mas segmentaciones....
 
         # Combina los títulos y las tablas en una lista de tuplas
-        data = list(zip(titles, html_tables, graphics, dataFrames))
+        data_zipped = zip(titles, html_tables, graphics, dataFrames)
 
-        return render(request, 'DataVizLab/tabla.html', {'data': data})
+        # Convertir lista de dataFrames y titulos en json
+        list_dataFrames_json = [df.to_json(orient='split') for df in dataFrames]
+        dataFrames_json = json.dumps(list_dataFrames_json)
+        titles_json = json.dumps(titles)
+
+        return render(request, 'DataVizLab/show_data.html', {'data_zipped': data_zipped,
+                                                         'titles_json': titles_json, 'dataFrames_json': dataFrames_json})
     else:
         return HttpResponse("Error: Método no permitido")
 
 
-def export_to_xlsx(request):
-    dataFrames = request.POST.get('dataFrames')
-    print('este es el dataframe en la function',dataFrames)
-    return render(request, 'DataVizLab/successful_export.html', {'dataFrames':dataFrames})
+@csrf_exempt
+def exportToXlsX (request):
+    if request.method == 'POST':
+        titles_json = request.POST.get('titles_json')
+        titles = json.loads(titles_json)
+        dataFrames_json = request.POST.get('dataFrames_json')
+        dataFrames_str = json.loads(dataFrames_json)
+        # Convertir cada cadena JSON a un DataFrame de pandas
+        dataFrames = [pd.read_json(df_json, orient='split') for df_json in dataFrames_str]
+        file_name = request.POST.get('file_name')
+        return export.export_to_xlsx(request=request, titles=titles, dataFrames=dataFrames, file_name=file_name)
+    else:
+        return HttpResponse("Error: Método no permitido")
