@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}tabla{% endblock %}
+{% block content %}
+{% for title, table, graphic, dataFrame in data_zipped %}
+<br>
+<h2>{{ title }}</h2>
+<br>
+{{ table|safe }}
+<br><br>
+<img src="data:image/png;base64,{{ graphic }}" alt="grafica">
+<br><br>
+{% endfor %}
+<br><br>
+<form method="post" action="{% url 'DataVizLab:exportToXlsX' %}">
+    {% csrf_token %}
+    <label>
+        Elige el nombre del archivo para exportar:
+        <input type="text" name="file_name">
+    </label>
+    <br>
+    <input type="hidden" name="titles_json" value="{{ titles_json }}">
+    <input type="hidden" name="dataFrames_json" value="{{ dataFrames_json }}">
+    <button type="submit">Exportar</button>
+</form>
+{% endblock %}

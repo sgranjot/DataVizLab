@@ -7,7 +7,7 @@
 <ul>
     {% for obj in excelFile_list %}
     <li> {{ obj.original_filename }} &nbsp; &nbsp;
-        <input type="button" value="ver"> &nbsp; &nbsp;
+        <a href="{% url 'DataVizLab:detail_ExcelFile' pk=obj.pk %}"> <input type="button" value="abrir"> </a>&nbsp; &nbsp;
         <a href="{% url 'DataVizLab:delete_ExcelFile' pk=obj.pk %}"> <input type="button" value="eliminar"> </a>
     </li>
     {% endfor %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %} Dimensiones de {{ object.original_filename }} {% endblock %}
+{% block content %}
+<h1>Elige la dimensión en la que deseas trabajar:</h1>
+<br>
+<ul>
+    <a href="{% url 'DataVizLab:estructura_de_plantilla_segmentaciones' pk=object.pk %}"> <li>Estructura de Plantilla</li> </a>
+    <a href="#"> <li>Bajas</li> </a>
+    <a href="#"> <li>Promoción</li> </a>
+    <a href="#"> <li>Formación</li> </a>
+    <a href="#"> <li>Información Retributiva</li> </a>
+    <a href="#"> <li>Retribución</li> </a>
+    <a href="#"> <li>Conciliación</li> </a>
+    <a href="#"> <li>Salud Laboral</li> </a>
+    <a href="#"> <li>Horas/dias</li> </a>
+    <a href="#"> <li>Niveles</li> </a>
+</ul>
+{% endblock %}
